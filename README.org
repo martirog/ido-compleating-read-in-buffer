@@ -1,5 +1,7 @@
 Wrapper for ido-compleating-read to use it in buffer
 
+This is not tested. so at best good for snippets
+
 * requirements
   this requires ido. But ido comes with the standard emacs build
 
