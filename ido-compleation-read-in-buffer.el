@@ -63,11 +63,10 @@
      (setq text
            (minibuffer-with-setup-hook
                (lambda ()
-                 ;(add-hook 'minibuffer-exit-hook #'icrib-insert-erase-prewview nil t)
                  (add-hook 'post-command-hook #'icrib-insert-preview nil t)
                  (setq-local icrib-last-cmd nil)
-                 (setq-local ido-confirm-unique-completion nil))
-                 ;(setq-local ido-decorations (quote ("\n-> " "" "\n   " "\n   ..." "[" "]" " [No match]" " [Matched]" " [Not readable]" " [Too big]" " [Confirm]"))))
+                 (setq-local ido-confirm-unique-completion nil)
+                 (setq-local ido-decorations (quote ("\n-> " "" "\n   " "\n   ..." "[" "]" " [No match]" " [Matched]" " [Not readable]" " [Too big]" " [Confirm]"))))
              (ido-completing-read icrib-insert-text choises nil nil start-string nil nil nil)))) ; need to add histrory here
     (delete-region start end)
     (insert text)))
