@@ -1,0 +1,28 @@
+Wrapper for ido-compleating-read to use it in buffer
+
+* requirements
+  this requires ido. But ido comes with the standard emacs build
+
+* extra helpers
+  added helper functions to generate standard compleation candidate lists
+
+** icrib-search-all-buffers
+   sertch all buffers in curren session for compleation candidates
+   this takes all words that contains the search string so if you use ido fuzzy match
+   you will match all that contains the string
+*** inputs
+    str: the string to compleate
+    optional mmod: list of major mode buffers to sertch all others are ignored
+    optional ignore: list of buffer names to ignore
+
+    you need to ignore the *message* buffer if you print to it during execution
+
+** icrib-buffer-and-tag-compleation
+   run the compleation for candidates in all the buffers and in the tags table
+   TODO: currently you need the tagstable to be loaded to use this.
+
+*** inputs
+    str: the string to compleate
+    optional mmod: list of major mode buffers to sertch all others are ignored
+    optional ignore: list of buffer names to ignore
+    optional comp-list: extra list of compleation candidates
