@@ -133,7 +133,9 @@
 (defun icrib-buffer-and-tag-compleation (str &optional mmod ignore comp-list)
   (let ((comps '())
         (buf-comps (icrib-search-all-buffers str mmod ignore))
-        (tag-comps (all-completions str (tags-completion-table))))
+        (tag-comps '()))
+    (if tags-file-name
+        (setq tag-comps (all-completions str (tags-completion-table))))
     (setq comps (append comp-list buf-comps tag-comps))
     (icrib-ido-in-buffer-compleation-read str comps)))
 
