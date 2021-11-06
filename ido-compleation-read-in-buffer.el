@@ -29,7 +29,16 @@
       (unless sucsess
         (goto-char (nth 1 icrib-prewview-state))))))
 
-(require 'text-property-search)
+
+(defun icrib-search-text-field (value)
+  "find next field with value. and move point there"
+  (while (and (null (equal (point) (point-max))) (null (equal (symbol-name (get-text-property (- (point) 1) 'field)) value))
+              (goto-char (+ (field-end) 1))))
+  (if (equal (point) (point-max))
+      nil
+    (point)))
+
+
 (defun icrib-insert-vertical-preview ()
   (let* ((pre-view (propertize (minibuffer-contents) 'field 'icrib-prewview))
          (point-offset (- (point) (length icrib-insert-text) 1))
@@ -38,17 +47,17 @@
          (pre-view-second (substring pre-view (+ point-line-break 1) nil))
          (pre-view-length (length pre-view)))
     (with-selected-window icrib-prewview-window ;use the correct window here
-      (message "beginning of line %d" (line-beginning-position))
       (let* ((inhibit-field-text-motion t)
              (second-offset (- (nth 0 icrib-prewview-state) (line-beginning-position))))
         (if (eq (get-text-property (- (point) 1) 'field) 'icrib-prewview)
             (progn
               (save-excursion
                 (delete-field)
-                (while (text-property-search-forward 'field 'icrib-prewview t)
+                (while (icrib-search-text-field "icrib-prewview")
                   (delete-field)))))
         (unless (equal pre-view-length 0)
           (save-excursion
+            (message pre-view-first)
             (insert pre-view-first)
             (move-end-of-line 1)
             (insert (propertize "\n" 'field 'icrib-prewview))
@@ -56,7 +65,7 @@
               (insert-char ?  second-offset t)
               (insert line)
               (insert-and-inherit "\n")))
-          (goto-char (+ (nth 0 icrib-prewview-state) point-offset)))))))  ; insert
+          (goto-char (+ (nth 0 icrib-prewview-state) point-offset)))))))
 
 
 (defun icrib-insert-preview ()
