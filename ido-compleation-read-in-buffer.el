@@ -107,7 +107,8 @@
                  (if icrib-use-vertical
                      (progn
                        (add-hook 'post-command-hook #'icrib-insert-vertical-preview nil t)
-                       (setq-local ido-decorations (quote ("\n-> " "" "\n   " "\n   ..." "[" "]" " [No match]" " [Matched]" " [Not readable]" " [Too big]" " [Confirm]"))))
+                       (setq-local ido-decorations (quote ("\n-> " "" "\n   " "\n   ..." "[" "]" " [No match]" " [Matched]" " [Not readable]" " [Too big]" " [Confirm]")))
+                       (setq resize-mini-windows nil))
                    (add-hook 'post-command-hook #'icrib-insert-preview nil t))
                   (setq-local ido-enable-flex-matching nil))
              (ido-completing-read icrib-insert-text choises nil nil start-string nil nil nil)))) ; need to add histrory here
