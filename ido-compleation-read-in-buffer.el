@@ -44,8 +44,10 @@
          (point-offset (- (point) (length icrib-insert-text) 1))
          (point-line-break (string-match "\n" pre-view))
          (pre-view-first (substring pre-view 0 point-line-break))
-         (pre-view-second (substring pre-view (+ point-line-break 1) nil))
+         (pre-view-second '())
          (pre-view-length (length pre-view)))
+    (if point-line-break
+        (setq pre-view-second (substring pre-view (+ point-line-break 1) nil)))
     (with-selected-window icrib-prewview-window ;use the correct window here
       (let* ((inhibit-field-text-motion t)
              (second-offset (- (nth 0 icrib-prewview-state) (line-beginning-position))))
@@ -61,10 +63,11 @@
             (insert pre-view-first)
             (move-end-of-line 1)
             (insert (propertize "\n" 'field 'icrib-prewview))
-            (dolist (line (split-string pre-view-second "\n"))
-              (insert-char ?  second-offset t)
-              (insert line)
-              (insert-and-inherit "\n")))
+            (unless (equal (length pre-view-second) 0)
+              (dolist (line (split-string pre-view-second "\n"))
+                (insert-char ?  second-offset t)
+                (insert line)
+                (insert-and-inherit "\n"))))
           (goto-char (+ (nth 0 icrib-prewview-state) point-offset)))))))
 
 
