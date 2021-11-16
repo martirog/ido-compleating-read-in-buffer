@@ -133,7 +133,8 @@
 ; hevely influensed by hippie-expand
 (defun icrib-search-all-buffers (str &optional mmod ignore)
   (let ((all-the-buffers (buffer-list))
-        (regexp-str (regexp-opt `(,str) 'word))
+                                        ;(regexp-str (regexp-opt `(,str) 'word))
+        (regexp-str (concat "\\<\\(" str ".*\\)\\>"))
         (cur-buf (current-buffer))
         (ignore-first nil)
         (ret '()))
