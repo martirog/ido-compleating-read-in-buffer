@@ -8,6 +8,7 @@
 (defvar icrib-prewview-window nil)
 (defvar icrib-insert-text "icrib-insert: ")
 (defvar icrib-use-vertical nil)
+(defvar icrib-outside-candidates nil)
 
 ; this is copied from atomic-change-group in subr.el
 ; the change is that this always remove the change
@@ -80,7 +81,12 @@
           (delete-field))
       (unless (equal pre-view-length 0)
         (insert pre-view)
-        (goto-char (+ (nth 0 icrib-prewview-state) point-offset))))))  ; insert preview
+        (let ((new-point (+ (nth 0 icrib-prewview-state) point-offset)))
+          (if (< new-point (nth 1 icrib-prewview-state))
+              (progn
+                (setq icrib-outside-candidates t)
+                (exit-minibuffer))
+            (goto-char (+ (nth 0 icrib-prewview-state) point-offset))))))))  ; insert preview
 
 
 (defun icrib-ido-in-buffer-compleation-read (init-string choises)
@@ -116,7 +122,12 @@
                   (setq-local ido-enable-flex-matching nil))
              (ido-completing-read icrib-insert-text choises nil nil start-string nil nil nil)))) ; need to add histrory here
     (delete-region start end)
-    (insert text)))
+    (if icrib-outside-candidates
+        (progn
+          (setq icrib-outside-candidates nil)
+          (if (> (length start-string) 0)
+              (insert (substring start-string 0 -1))))
+      (insert text))))
 
 
 ; hevely influensed by hippie-expand
