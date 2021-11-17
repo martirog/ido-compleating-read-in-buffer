@@ -65,10 +65,12 @@
             (move-end-of-line 1)
             (insert (propertize "\n" 'field 'icrib-prewview))
             (unless (equal (length pre-view-second) 0)
-              (dolist (line (split-string pre-view-second "\n"))
-                (insert-char ?  second-offset t)
-                (insert line)
-                (insert-and-inherit "\n"))))
+              (let ((comps (split-string pre-view-second "\n")))
+                (setf (car comps) (propertize (car comps) 'font-lock-face 'bold))
+                (dolist (line comps)
+                  (insert-char ?  second-offset t)
+                  (insert line)
+                  (insert-and-inherit "\n")))))
           (goto-char (+ (nth 0 icrib-prewview-state) point-offset)))))))
 
 
