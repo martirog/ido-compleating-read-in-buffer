@@ -121,7 +121,7 @@
                        (setq-local ido-decorations (quote ("\n-> " "" "\n   " "\n   ..." "[" "]" " [No match]" " [Matched]" " [Not readable]" " [Too big]" " [Confirm]")))
                        (setq resize-mini-windows nil))
                    (add-hook 'post-command-hook #'icrib-insert-preview nil t))
-                  (setq-local ido-enable-flex-matching nil))
+                 (setq-local ido-enable-flex-matching nil))
              (ido-completing-read icrib-insert-text choises nil nil start-string nil nil nil)))) ; need to add histrory here
     (delete-region start end)
     (if icrib-outside-candidates
@@ -133,28 +133,44 @@
 
 
 ; hevely influensed by hippie-expand
-(defun icrib-search-all-buffers (str &optional mmod ignore)
+(defun icrib-search-rest-of-buffers (str &optional mmod ignore)
   (let ((all-the-buffers (buffer-list))
-                                        ;(regexp-str (regexp-opt `(,str) 'word))
         (regexp-str (concat "\\<\\(" str ".*\\)\\>"))
-        (cur-buf (current-buffer))
-        (ignore-first nil)
         (ret '()))
     (dolist (buf all-the-buffers ret)
-      (with-current-buffer buf
-        (when (and (or (not mmod) (member (symbol-name major-mode) mmod))
-                   (or (not ignore) (not (member (buffer-name) ignore))))
-          (when (eq buf cur-buf)
-            (setq ignore-first t))
-          (save-excursion
-            (save-restriction
-              (widen)
-              (goto-char (point-min))
-              (while (re-search-forward regexp-str nil t)
-                (if (and (string= (thing-at-point 'symbol t) str)
-                         ignore-first)
-                    (setq ignore-first nil)
+      (unless (eq buf (current-buffer))
+        (with-current-buffer buf
+          (when (and (or (not mmod) (member (symbol-name major-mode) mmod))
+                     (or (not ignore) (not (member (buffer-name) ignore))))
+            (save-excursion
+              (save-restriction
+                (widen)
+                (goto-char (point-min))
+                (while (re-search-forward regexp-str nil t)
                   (add-to-list 'ret (thing-at-point 'symbol t)))))))))))
+
+
+(defun icrib-search-current-buffer (str)
+  (let ((ignore-first t)
+        (regexp-str (concat "\\<\\(" str ".*\\)\\>"))
+        (ret '()))
+    (save-excursion
+      (save-restriction
+        (widen)
+        (goto-char (point-min))
+        (while (re-search-forward regexp-str nil t)
+          (if (and (string= (thing-at-point 'symbol t) str)
+                   ignore-first)
+              (setq ignore-first nil)
+            (add-to-list 'ret (thing-at-point 'symbol t))))))
+    ret))
+
+
+(defun icrib-search-all-buffers (str &optional mmod ignore)
+  (let ((comps '())
+        (this-buffer (icrib-search-current-buffer str))
+        (rest-of-buffers (icrib-search-rest-of-buffers str mmod ignore)))
+    (append this-buffer rest-of-buffers)))
 
 
 (defun icrib-buffer-and-tag-compleation (str &optional mmod ignore comp-list)
@@ -163,7 +179,7 @@
         (tag-comps '()))
     (if tags-file-name
         (setq tag-comps (all-completions str (tags-completion-table))))
-    (setq comps (append comp-list buf-comps tag-comps))
+    (setq comps (delete-dups (append comp-list buf-comps tag-comps)))
     (icrib-ido-in-buffer-compleation-read str comps)))
 
 
