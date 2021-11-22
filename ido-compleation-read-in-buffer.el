@@ -60,7 +60,6 @@
                   (delete-field)))))
         (unless (equal pre-view-length 0)
           (save-excursion
-            (message pre-view-first)
             (insert pre-view-first)
             (move-end-of-line 1)
             (insert (propertize "\n" 'field 'icrib-prewview))
@@ -147,7 +146,7 @@
                 (widen)
                 (goto-char (point-min))
                 (while (re-search-forward regexp-str nil t)
-                  (add-to-list 'ret (thing-at-point 'symbol t)))))))))))
+                  (add-to-list 'ret (thing-at-point 'symbol t) t))))))))))
 
 
 (defun icrib-search-current-buffer (str)
@@ -157,12 +156,19 @@
     (save-excursion
       (save-restriction
         (widen)
-        (goto-char (point-min))
+        (while (re-search-backward regexp-str nil t)
+          (if (and (string= (thing-at-point 'symbol t) str)
+                   ignore-first)
+              (setq ignore-first nil)
+            (add-to-list 'ret (thing-at-point 'symbol t) t)))))
+    (save-excursion
+      (save-restriction
+        (widen)
         (while (re-search-forward regexp-str nil t)
           (if (and (string= (thing-at-point 'symbol t) str)
                    ignore-first)
               (setq ignore-first nil)
-            (add-to-list 'ret (thing-at-point 'symbol t))))))
+            (add-to-list 'ret (thing-at-point 'symbol t) t)))))
     ret))
 
 
