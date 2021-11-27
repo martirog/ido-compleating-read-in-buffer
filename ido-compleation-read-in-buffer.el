@@ -1,18 +1,21 @@
+;; -*- lexical-binding: t -*-
 ; ido compleation read in buffer
 ; icrib
 
 (defgroup icrib nil
-  "Get ido-compleating-read into the buffer")
+  "Get ido-compleating-read into the buffer"
+  :prefix "icrib")
 
-(defvar icrib-prewview-state nil)
-(defvar icrib-prewview-window nil)
-(defvar icrib-insert-text "icrib-insert: ")
-(defvar icrib-use-vertical nil)
-(defvar icrib-outside-candidates nil)
+;(setq icrib-prewview-state nil)
+;(setq icrib-prewview-window nil)
+(setq icrib-insert-text "icrib-insert: ")
+(defvar icrib-use-vertical nil
+  "set to use vertical desplay of compleatio candidates")
+;(setq icrib-outside-candidates nil)
 
 ; this is copied from atomic-change-group in subr.el
 ; the change is that this always remove the change
-(defmacro icrib-atomic-change (&rest body)
+(defmacro icrib--atomic-change (&rest body)
   `(let ((handle (prepare-change-group))
         (undo-outer-limit nil)
         (undo-limit most-positive-fixnum)
@@ -31,7 +34,7 @@
         (goto-char (nth 1 icrib-prewview-state))))))
 
 
-(defun icrib-search-text-field (value)
+(defun icrib--search-text-field (value)
   "find next field with value. and move point there"
   (while (and (null (equal (point) (point-max))) (null (equal (symbol-name (get-text-property (- (point) 1) 'field)) value))
               (goto-char (+ (field-end) 1))))
@@ -40,7 +43,7 @@
     (point)))
 
 
-(defun icrib-insert-vertical-preview ()
+(defun icrib--insert-vertical-preview ()
   (let* ((pre-view (propertize (minibuffer-contents) 'field 'icrib-prewview))
          (point-offset (- (point) (length icrib-insert-text) 1))
          (point-line-break (string-match "\n" pre-view))
@@ -56,7 +59,7 @@
             (progn
               (save-excursion
                 (delete-field)
-                (while (icrib-search-text-field "icrib-prewview")
+                (while (icrib--search-text-field "icrib-prewview")
                   (delete-field)))))
         (unless (equal pre-view-length 0)
           (save-excursion
@@ -73,7 +76,7 @@
           (goto-char (+ (nth 0 icrib-prewview-state) point-offset)))))))
 
 
-(defun icrib-insert-preview ()
+(defun icrib--insert-preview ()
   (let* ((pre-view (propertize (minibuffer-contents) 'field 'icrib-prewview))
          (pre-view-length (length pre-view))
          (point-offset (- (point) (length icrib-insert-text) 1)))
@@ -106,7 +109,7 @@
         (setq start (point)
               end (point)
               start-string nil)))
-    (icrib-atomic-change
+    (icrib--atomic-change
      (delete-region start end)
      (setq-local icrib-prewview-state `(,start ,end ,start-string))
      (setq text
@@ -116,10 +119,10 @@
                  (setq-local ido-confirm-unique-completion nil)
                  (if icrib-use-vertical
                      (progn
-                       (add-hook 'post-command-hook #'icrib-insert-vertical-preview nil t)
+                       (add-hook 'post-command-hook #'icrib--insert-vertical-preview nil t)
                        (setq-local ido-decorations (quote ("\n-> " "" "\n   " "\n   ..." "[" "]" " [No match]" " [Matched]" " [Not readable]" " [Too big]" " [Confirm]")))
                        (setq resize-mini-windows nil))
-                   (add-hook 'post-command-hook #'icrib-insert-preview nil t))
+                   (add-hook 'post-command-hook #'icrib--insert-preview nil t))
                  (setq-local ido-enable-flex-matching nil))
              (ido-completing-read icrib-insert-text choises nil nil start-string nil nil nil)))) ; need to add histrory here
     (delete-region start end)
