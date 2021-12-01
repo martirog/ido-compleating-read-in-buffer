@@ -160,16 +160,16 @@
       (save-restriction
         (widen)
         (while (re-search-backward regexp-str nil t)
-          (if (and (string= (thing-at-point 'symbol t) str)
-                   ignore-first)
+          (if (and ignore-first
+                   (string= (thing-at-point 'symbol t) str))
               (setq ignore-first nil)
             (add-to-list 'ret (thing-at-point 'symbol t) t)))))
     (save-excursion
       (save-restriction
         (widen)
         (while (re-search-forward regexp-str nil t)
-          (if (and (string= (thing-at-point 'symbol t) str)
-                   ignore-first)
+          (if (and ignore-first
+                   (string= (thing-at-point 'symbol t) str))
               (setq ignore-first nil)
             (add-to-list 'ret (thing-at-point 'symbol t) t)))))
     ret))
