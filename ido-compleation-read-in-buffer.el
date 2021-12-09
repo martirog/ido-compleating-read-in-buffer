@@ -36,7 +36,7 @@
 
 (defun icrib--search-text-field (value)
   "find next field with value. and move point there"
-  (while (and (null (equal (point) (point-max))) (null (equal (symbol-name (get-text-property (- (point) 1) 'field)) value))
+  (while (and (null (equal (point) (point-max))) (null (equal (symbol-name (get-text-property (point) 'field)) value))
               (goto-char (+ (field-end) 1))))
   (if (equal (point) (point-max))
       nil
@@ -55,7 +55,7 @@
     (with-selected-window icrib-prewview-window ;use the correct window here
       (let* ((inhibit-field-text-motion t)
              (second-offset (- (nth 0 icrib-prewview-state) (line-beginning-position))))
-        (if (eq (get-text-property (- (point) 1) 'field) 'icrib-prewview)
+        (if (eq (get-text-property (point) 'field) 'icrib-prewview)
             (progn
               (save-excursion
                 (delete-field)
@@ -81,7 +81,7 @@
          (pre-view-length (length pre-view))
          (point-offset (- (point) (length icrib-insert-text) 1)))
     (with-selected-window icrib-prewview-window ;use the correct window here
-      (if (eq (get-text-property (+ (point) 1) 'field) 'icrib-prewview)
+      (if (eq (get-text-property (point) 'field) 'icrib-prewview)
           (delete-field))
       (unless (equal pre-view-length 0)
         (insert pre-view)
