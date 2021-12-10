@@ -11,7 +11,7 @@
 (setq icrib-insert-text "icrib-insert: ")
 (defvar icrib-use-vertical nil
   "set to use vertical desplay of compleatio candidates")
-;(setq icrib-outside-candidates nil)
+(setq icrib-outside-candidates nil)
 
 ; this is copied from atomic-change-group in subr.el
 ; the change is that this always remove the change
@@ -137,7 +137,8 @@
 ; hevely influensed by hippie-expand
 (defun icrib-search-rest-of-buffers (str &optional mmod ignore)
   (let ((all-the-buffers (buffer-list))
-        (regexp-str (concat "\\<\\(" str ".*\\)\\>"))
+        (regexp-str (concat "\\<\\(" str "\\)"))
+        (case-fold-search nil)
         (ret '()))
     (dolist (buf all-the-buffers ret)
       (unless (eq buf (current-buffer))
@@ -154,7 +155,8 @@
 
 (defun icrib-search-current-buffer (str)
   (let ((ignore-first t)
-        (regexp-str (concat "\\<\\(" str ".*\\)\\>"))
+        (regexp-str (concat "\\<\\(" str "\\)"))
+        (case-fold-search nil)
         (ret '()))
     (save-excursion
       (save-restriction
