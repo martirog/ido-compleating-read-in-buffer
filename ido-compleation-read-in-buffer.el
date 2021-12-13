@@ -78,7 +78,12 @@
                   (insert-char ?  second-offset t)
                   (insert line)
                   (insert-and-inherit "\n")))))
-          (goto-char (+ (nth 0 icrib-prewview-state) point-offset)))))))
+          (let ((new-point (+ (nth 0 icrib-prewview-state) point-offset)))
+            (if (< new-point (nth 1 icrib-prewview-state))
+                (progn
+                  (setq icrib-outside-candidates t)
+                  (exit-minibuffer))
+              (goto-char new-point))))))))  ; insert preview
 
 
 (defun icrib--insert-preview ()
@@ -95,7 +100,7 @@
               (progn
                 (setq icrib-outside-candidates t)
                 (exit-minibuffer))
-            (goto-char (+ (nth 0 icrib-prewview-state) point-offset))))))))  ; insert preview
+            (goto-char new-point)))))))  ; insert preview
 
 
 (defun icrib-ido-in-buffer-compleation-read (init-string choises)
