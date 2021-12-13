@@ -43,6 +43,11 @@
     (point)))
 
 
+(defun icrib--vertical-point ()
+  (if (= (point) 1)
+      (point)
+    (- (point) 1)))
+
 (defun icrib--insert-vertical-preview ()
   (let* ((pre-view (propertize (minibuffer-contents) 'field 'icrib-prewview))
          (point-offset (- (point) (length icrib-insert-text) 1))
@@ -55,7 +60,7 @@
     (with-selected-window icrib-prewview-window ;use the correct window here
       (let* ((inhibit-field-text-motion t)
              (second-offset (- (nth 0 icrib-prewview-state) (line-beginning-position))))
-        (if (eq (get-text-property (point) 'field) 'icrib-prewview)
+        (if (eq (get-text-property (icrib--vertical-point) 'field) 'icrib-prewview)
             (progn
               (save-excursion
                 (delete-field)
