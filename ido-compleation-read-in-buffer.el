@@ -13,6 +13,13 @@
   "set to use vertical desplay of compleatio candidates")
 (setq icrib-outside-candidates nil)
 
+; thing at point changed the argument list at some point
+; testing with version 25 at this time.
+(defun icrib-thing-at-point (thing &optional no-properties)
+  (if (version< "25" emacs-version)
+      (thing-at-point thing no-properties)
+    (thing-at-point thing)))
+
 ; this is copied from atomic-change-group in subr.el
 ; the change is that this always remove the change
 (defmacro icrib--atomic-change (&rest body)
@@ -160,7 +167,7 @@
                 (widen)
                 (goto-char (point-min))
                 (while (re-search-forward regexp-str nil t)
-                  (add-to-list 'ret (thing-at-point 'symbol t) t))))))))))
+                  (add-to-list 'ret (icrib-thing-at-point 'symbol t) t))))))))))
 
 
 (defun icrib-search-current-buffer (str)
@@ -172,18 +179,19 @@
       (save-restriction
         (widen)
         (while (re-search-backward regexp-str nil t)
+          (message "%s" (icrib-thing-at-point 'symbol t))
           (if (and ignore-first
-                   (string= (thing-at-point 'symbol t) str))
+                   (string= (icrib-thing-at-point 'symbol t) str))
               (setq ignore-first nil)
-            (add-to-list 'ret (thing-at-point 'symbol t) t)))))
+            (add-to-list 'ret (icrib-thing-at-point 'symbol t) t)))))
     (save-excursion
       (save-restriction
         (widen)
         (while (re-search-forward regexp-str nil t)
           (if (and ignore-first
-                   (string= (thing-at-point 'symbol t) str))
+                   (string= (icrib-thing-at-point 'symbol t) str))
               (setq ignore-first nil)
-            (add-to-list 'ret (thing-at-point 'symbol t) t)))))
+            (add-to-list 'ret (icrib-thing-at-point 'symbol t) t)))))
     ret))
 
 
